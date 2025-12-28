@@ -1,59 +1,265 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Simple E-commerce Shopping Cart
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A simple e-commerce shopping cart application built with Laravel, Inertia.js, and React. Users can browse products, add them to a cart, update quantities, remove items, and place orders.
 
-## About Laravel
+## Tech Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   **Backend:** Laravel 12
+-   **Frontend:** Inertia.js + React
+-   **Styling:** Tailwind CSS
+-   **Database:** PostgreSQL (configurable)
+-   **Queue:** Database driver
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-   User authentication (register, login, logout)
+-   Product listing with pagination
+-   Product detail pages
+-   Shopping cart management (add, update, remove items)
+-   Cart persisted in database per authenticated user
+-   Checkout and order placement
+-   Order history
+-   Low stock email notifications (via queued jobs)
+-   Daily sales report (via scheduled jobs)
 
-## Learning Laravel
+## Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+-   PHP >= 8.2
+-   Composer
+-   Node.js >= 18
+-   PostgreSQL (or MySQL/SQLite)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+### 1. Clone the repository
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone <repository-url>
+cd simple-shopping-cart
+```
 
-### Premium Partners
+### 2. Install PHP dependencies
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+composer install
+```
 
-## Contributing
+### 3. Install Node.js dependencies
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+npm install
+```
 
-## Code of Conduct
+### 4. Environment setup
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+### 5. Configure your database
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Edit `.env` file with your database credentials:
 
-## License
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=shopping_cart
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 6. Run migrations and seed the database
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+### 7. Build frontend assets
+
+```bash
+# For development
+npm run dev
+
+# For production
+npm run build
+```
+
+### 8. Start the development server
+
+```bash
+php artisan serve
+```
+
+Visit `http://localhost:8000` in your browser.
+
+## Default Users
+
+After seeding, you'll have:
+
+| User       | Email             | Password | Role  |
+| ---------- | ----------------- | -------- | ----- |
+| Admin User | admin@example.com | password | Admin |
+
+## Jobs and Queues
+
+This application uses Laravel's queue system for background processing.
+
+### Low Stock Notification Job
+
+**File:** `app/Jobs/LowStockNotificationJob.php`
+
+This job is dispatched automatically when a product's stock falls to 5 or below after a purchase. It sends an email notification to all admin users.
+
+**How it works:**
+
+1. When an order is placed, stock is decremented
+2. After decrement, the system checks if stock <= 5
+3. If low stock, `LowStockNotificationJob::dispatch($product)` is called
+4. The job is added to the queue and processed by a worker
+5. Email is sent to all users with `is_admin = true`
+
+### Running the Queue Worker
+
+To process queued jobs, run:
+
+```bash
+# Run the queue worker
+php artisan queue:work
+
+# Run with specific options
+php artisan queue:work --tries=3 --timeout=90
+
+# Run in the background (production)
+php artisan queue:work --daemon
+```
+
+For production, use a process manager like Supervisor to keep the worker running.
+
+**Supervisor configuration example** (`/etc/supervisor/conf.d/laravel-worker.conf`):
+
+```ini
+[program:laravel-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=php /path/to/your/project/artisan queue:work --sleep=3 --tries=3
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/path/to/your/project/storage/logs/worker.log
+```
+
+## Scheduled Jobs (Cron)
+
+### Daily Sales Report
+
+**File:** `app/Jobs/DailySalesReportJob.php`
+
+This job runs every day at 6:00 PM and sends a summary of the day's sales to all admin users.
+
+**Schedule configuration** (`bootstrap/app.php`):
+
+```php
+->withSchedule(function (Schedule $schedule): void {
+    $schedule->job(new DailySalesReportJob())->dailyAt('18:00');
+})
+```
+
+### Running the Scheduler
+
+Laravel's scheduler needs to be triggered by a system cron job. Add this entry to your server's crontab:
+
+```bash
+# Open crontab
+crontab -e
+
+# Add this line
+* * * * * cd /path/to/your/project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+This runs every minute and Laravel determines which scheduled tasks are due.
+
+### Testing the Scheduler Locally
+
+```bash
+# List all scheduled tasks
+php artisan schedule:list
+
+# Run the scheduler manually
+php artisan schedule:run
+
+# Run a specific scheduled task
+php artisan schedule:test
+```
+
+## Project Structure
+
+```
+app/
+├── Http/Controllers/
+│   ├── CartController.php      # Cart management
+│   ├── OrderController.php     # Orders and checkout
+│   └── ProductController.php   # Product listing
+├── Jobs/
+│   ├── DailySalesReportJob.php # Daily sales report
+│   └── LowStockNotificationJob.php # Low stock alerts
+├── Mail/
+│   ├── DailySalesReport.php    # Sales report mailable
+│   └── LowStockNotification.php # Low stock mailable
+└── Models/
+    ├── Cart.php
+    ├── CartItem.php
+    ├── Order.php
+    ├── OrderItem.php
+    ├── Product.php
+    └── User.php
+
+resources/js/
+├── Layouts/
+│   ├── AuthenticatedLayout.jsx
+│   └── MainLayout.jsx
+└── Pages/
+    ├── Cart/Index.jsx
+    ├── Orders/
+    │   ├── Checkout.jsx
+    │   ├── Index.jsx
+    │   └── Show.jsx
+    └── Products/
+        ├── Index.jsx
+        └── Show.jsx
+```
+
+## API Routes
+
+| Method | URI            | Description               |
+| ------ | -------------- | ------------------------- |
+| GET    | /              | Product listing (home)    |
+| GET    | /products      | Product listing           |
+| GET    | /products/{id} | Product details           |
+| GET    | /cart          | View cart                 |
+| POST   | /cart/add      | Add item to cart          |
+| PATCH  | /cart/{id}     | Update cart item quantity |
+| DELETE | /cart/{id}     | Remove item from cart     |
+| GET    | /checkout      | Checkout page             |
+| POST   | /orders        | Place order               |
+| GET    | /orders        | Order history             |
+| GET    | /orders/{id}   | Order details             |
+
+## Email Configuration
+
+For development, emails are logged to `storage/logs/laravel.log`. For production, configure your mail driver in `.env`:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.example.com
+MAIL_PORT=587
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="shop@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
