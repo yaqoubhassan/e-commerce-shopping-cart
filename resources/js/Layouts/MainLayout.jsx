@@ -13,7 +13,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 export default function MainLayout({ children }) {
-    const { auth } = usePage().props;
+    const { auth, cartCount } = usePage().props;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
@@ -36,11 +36,10 @@ export default function MainLayout({ children }) {
                             <div className="hidden sm:flex sm:ml-10 sm:space-x-1">
                                 <Link
                                     href={route('products.index')}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                                        route().current('products.*') || route().current('home')
-                                            ? 'bg-indigo-50 text-indigo-600'
-                                            : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
-                                    }`}
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${route().current('products.*') || route().current('home')
+                                        ? 'bg-indigo-50 text-indigo-600'
+                                        : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                                        }`}
                                 >
                                     Products
                                 </Link>
@@ -53,22 +52,27 @@ export default function MainLayout({ children }) {
                                 <>
                                     <Link
                                         href={route('cart.index')}
-                                        className={`flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                                            route().current('cart.*')
-                                                ? 'bg-indigo-50 text-indigo-600'
-                                                : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
-                                        }`}
+                                        className={`flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${route().current('cart.*')
+                                            ? 'bg-indigo-50 text-indigo-600'
+                                            : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                                            }`}
                                     >
-                                        <ShoppingCartIcon className="h-5 w-5" />
+                                        <div className="relative">
+                                            <ShoppingCartIcon className="h-5 w-5" />
+                                            {cartCount > 0 && (
+                                                <span className="absolute -top-2 -right-2 flex items-center justify-center h-4 w-4 text-xs font-bold text-white bg-red-500 rounded-full">
+                                                    {cartCount > 9 ? '9+' : cartCount}
+                                                </span>
+                                            )}
+                                        </div>
                                         <span>Cart</span>
                                     </Link>
                                     <Link
                                         href={route('orders.index')}
-                                        className={`flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                                            route().current('orders.*')
-                                                ? 'bg-indigo-50 text-indigo-600'
-                                                : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
-                                        }`}
+                                        className={`flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${route().current('orders.*')
+                                            ? 'bg-indigo-50 text-indigo-600'
+                                            : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                                            }`}
                                     >
                                         <ClipboardDocumentListIcon className="h-5 w-5" />
                                         <span>Orders</span>
@@ -141,11 +145,10 @@ export default function MainLayout({ children }) {
                             <div className="px-4 py-3 space-y-1">
                                 <Link
                                     href={route('products.index')}
-                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                                        route().current('products.*') || route().current('home')
-                                            ? 'bg-indigo-50 text-indigo-600'
-                                            : 'text-gray-700 hover:bg-gray-50'
-                                    }`}
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${route().current('products.*') || route().current('home')
+                                        ? 'bg-indigo-50 text-indigo-600'
+                                        : 'text-gray-700 hover:bg-gray-50'
+                                        }`}
                                 >
                                     <ShoppingBagIcon className="h-5 w-5" />
                                     <span>Products</span>
@@ -154,22 +157,27 @@ export default function MainLayout({ children }) {
                                     <>
                                         <Link
                                             href={route('cart.index')}
-                                            className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                                                route().current('cart.*')
-                                                    ? 'bg-indigo-50 text-indigo-600'
-                                                    : 'text-gray-700 hover:bg-gray-50'
-                                            }`}
+                                            className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${route().current('cart.*')
+                                                ? 'bg-indigo-50 text-indigo-600'
+                                                : 'text-gray-700 hover:bg-gray-50'
+                                                }`}
                                         >
-                                            <ShoppingCartIcon className="h-5 w-5" />
-                                            <span>Cart</span>
+                                            <div className="relative">
+                                                <ShoppingCartIcon className="h-5 w-5" />
+                                                {cartCount > 0 && (
+                                                    <span className="absolute -top-2 -right-2 flex items-center justify-center h-4 w-4 text-xs font-bold text-white bg-red-500 rounded-full">
+                                                        {cartCount > 9 ? '9+' : cartCount}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <span>Cart{cartCount > 0 ? ` (${cartCount})` : ''}</span>
                                         </Link>
                                         <Link
                                             href={route('orders.index')}
-                                            className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                                                route().current('orders.*')
-                                                    ? 'bg-indigo-50 text-indigo-600'
-                                                    : 'text-gray-700 hover:bg-gray-50'
-                                            }`}
+                                            className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${route().current('orders.*')
+                                                ? 'bg-indigo-50 text-indigo-600'
+                                                : 'text-gray-700 hover:bg-gray-50'
+                                                }`}
                                         >
                                             <ClipboardDocumentListIcon className="h-5 w-5" />
                                             <span>Orders</span>

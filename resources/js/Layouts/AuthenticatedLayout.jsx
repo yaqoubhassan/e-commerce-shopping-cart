@@ -1,20 +1,20 @@
-import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
+    ArrowRightOnRectangleIcon,
+    Bars3Icon,
+    ChevronDownIcon,
+    ClipboardDocumentListIcon,
+    Cog6ToothIcon,
     ShoppingBagIcon,
     ShoppingCartIcon,
-    UserIcon,
-    Bars3Icon,
-    XMarkIcon,
-    ClipboardDocumentListIcon,
-    ArrowRightOnRectangleIcon,
-    ChevronDownIcon,
-    Cog6ToothIcon
+    XMarkIcon
 } from '@heroicons/react/24/outline';
+import { Link, usePage } from '@inertiajs/react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useState } from 'react';
 
 export default function AuthenticatedLayout({ children }) {
-    const user = usePage().props.auth.user;
+    const { auth, cartCount } = usePage().props;
+    const user = auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
     const [showUserDropdown, setShowUserDropdown] = useState(false);
 
@@ -38,33 +38,37 @@ export default function AuthenticatedLayout({ children }) {
                             <div className="hidden sm:flex sm:ml-10 sm:space-x-1">
                                 <Link
                                     href={route('products.index')}
-                                    className={`flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                                        route().current('products.*') || route().current('home')
-                                            ? 'bg-indigo-50 text-indigo-600'
-                                            : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
-                                    }`}
+                                    className={`flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${route().current('products.*') || route().current('home')
+                                        ? 'bg-indigo-50 text-indigo-600'
+                                        : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                                        }`}
                                 >
                                     <ShoppingBagIcon className="h-5 w-5" />
                                     <span>Products</span>
                                 </Link>
                                 <Link
                                     href={route('cart.index')}
-                                    className={`flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                                        route().current('cart.*')
-                                            ? 'bg-indigo-50 text-indigo-600'
-                                            : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
-                                    }`}
+                                    className={`flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${route().current('cart.*')
+                                        ? 'bg-indigo-50 text-indigo-600'
+                                        : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                                        }`}
                                 >
-                                    <ShoppingCartIcon className="h-5 w-5" />
+                                    <div className="relative">
+                                        <ShoppingCartIcon className="h-5 w-5" />
+                                        {cartCount > 0 && (
+                                            <span className="absolute -top-2 -right-2 flex items-center justify-center h-4 w-4 text-xs font-bold text-white bg-red-500 rounded-full">
+                                                {cartCount > 9 ? '9+' : cartCount}
+                                            </span>
+                                        )}
+                                    </div>
                                     <span>Cart</span>
                                 </Link>
                                 <Link
                                     href={route('orders.index')}
-                                    className={`flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                                        route().current('orders.*') && !route().current('orders.checkout')
-                                            ? 'bg-indigo-50 text-indigo-600'
-                                            : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
-                                    }`}
+                                    className={`flex items-center space-x-1 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${route().current('orders.*') && !route().current('orders.checkout')
+                                        ? 'bg-indigo-50 text-indigo-600'
+                                        : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                                        }`}
                                 >
                                     <ClipboardDocumentListIcon className="h-5 w-5" />
                                     <span>Orders</span>
@@ -147,33 +151,37 @@ export default function AuthenticatedLayout({ children }) {
                             <div className="px-4 py-3 space-y-1">
                                 <Link
                                     href={route('products.index')}
-                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                                        route().current('products.*') || route().current('home')
-                                            ? 'bg-indigo-50 text-indigo-600'
-                                            : 'text-gray-700 hover:bg-gray-50'
-                                    }`}
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${route().current('products.*') || route().current('home')
+                                        ? 'bg-indigo-50 text-indigo-600'
+                                        : 'text-gray-700 hover:bg-gray-50'
+                                        }`}
                                 >
                                     <ShoppingBagIcon className="h-5 w-5" />
                                     <span>Products</span>
                                 </Link>
                                 <Link
                                     href={route('cart.index')}
-                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                                        route().current('cart.*')
-                                            ? 'bg-indigo-50 text-indigo-600'
-                                            : 'text-gray-700 hover:bg-gray-50'
-                                    }`}
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${route().current('cart.*')
+                                        ? 'bg-indigo-50 text-indigo-600'
+                                        : 'text-gray-700 hover:bg-gray-50'
+                                        }`}
                                 >
-                                    <ShoppingCartIcon className="h-5 w-5" />
-                                    <span>Cart</span>
+                                    <div className="relative">
+                                        <ShoppingCartIcon className="h-5 w-5" />
+                                        {cartCount > 0 && (
+                                            <span className="absolute -top-2 -right-2 flex items-center justify-center h-4 w-4 text-xs font-bold text-white bg-red-500 rounded-full">
+                                                {cartCount > 9 ? '9+' : cartCount}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <span>Cart{cartCount > 0 ? ` (${cartCount})` : ''}</span>
                                 </Link>
                                 <Link
                                     href={route('orders.index')}
-                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                                        route().current('orders.*') && !route().current('orders.checkout')
-                                            ? 'bg-indigo-50 text-indigo-600'
-                                            : 'text-gray-700 hover:bg-gray-50'
-                                    }`}
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-base font-medium transition-colors ${route().current('orders.*') && !route().current('orders.checkout')
+                                        ? 'bg-indigo-50 text-indigo-600'
+                                        : 'text-gray-700 hover:bg-gray-50'
+                                        }`}
                                 >
                                     <ClipboardDocumentListIcon className="h-5 w-5" />
                                     <span>Orders</span>
